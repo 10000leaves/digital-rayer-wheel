@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
-import { angleState } from "@/atoms/prayerWheelAtom";
-import { useRecoilValue } from "recoil";
+import { angleState, reciteState } from "@/atoms/prayerWheelAtom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 const Typing: React.FC = () => {
   const [displayedMessage, setDisplayedMessage] = useState("");
   const [index, setIndex] = useState(0);
 
+  const setRecite = useSetRecoilState(reciteState);
   const angle = useRecoilValue(angleState);
   const roundAngle = Math.round(angle);
 
@@ -23,6 +24,9 @@ const Typing: React.FC = () => {
       setDisplayedMessage((prev) => prev + message[index]);
       setIndex((prevIndex) => (prevIndex + 1) % message.length);
     }
+    if ((index + 1) === message.length) {
+      setRecite((prevRecite) => (prevRecite + 1));
+    }
     // Scroll the textarea to the bottom
     if (textareaRef.current) {
       textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
@@ -32,7 +36,8 @@ const Typing: React.FC = () => {
   return (
     <textarea
       ref={textareaRef}
-      className="bg-gray-100 p-4 w-full"
+      className="bg-gray-100 p-4 w-full resize-none outline-none"
+      rows={10}
       value={displayedMessage}
       readOnly
     />
