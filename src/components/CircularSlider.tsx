@@ -52,6 +52,7 @@ const CircularSlider = () => {
   }, []);
 
   const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    event.preventDefault(); // タッチイベントのデフォルト動作をキャンセル
     setIsDragging(true);
     handleMouseMove(event as unknown as MouseEvent);
   }, []);
