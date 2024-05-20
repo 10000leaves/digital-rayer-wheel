@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, TouchEvent } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./CircularSlider.module.css";
-
 import { angleState } from "@/atoms/prayerWheelAtom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 
@@ -14,7 +13,7 @@ const CircularSlider = () => {
   const setAngle = useSetRecoilState(angleState);
   const angle = useRecoilValue(angleState);
 
-  const getAngleFromEvent = (event: MouseEvent | TouchEvent) => {
+  const getAngleFromEvent = (event: MouseEvent | TouchEvent): number => {
     if (sliderRef.current) {
       const sliderRect = sliderRef.current.getBoundingClientRect();
       const sliderRadius = sliderRect.width / 2;
@@ -23,7 +22,7 @@ const CircularSlider = () => {
       const x = clientX - (sliderRect.left + sliderRadius);
       const y = clientY - (sliderRect.top + sliderRadius);
       const angle = Math.atan2(y, x) * (180 / Math.PI);
-      return angle < 0 ? angle + 360 : angle;
+      return Math.round(angle < 0 ? angle + 360 : angle);
     }
     return 0;
   };
@@ -52,15 +51,14 @@ const CircularSlider = () => {
     setIsDragging(true);
   }, []);
 
-  const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+  const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
     setIsDragging(true);
-    handleMouseMove(event);
+    handleMouseMove(event as unknown as MouseEvent);
   }, []);
 
   const handleMouseMove = useCallback((event: MouseEvent | TouchEvent) => {
     if (isDragging) {
       const newAngle = getAngleFromEvent(event);
-      // 現在の角度が新しい角度と異なる場合のみ、setAngleを呼び出す
       if (newAngle !== angle) {
         setAngle(newAngle);
       }
@@ -75,17 +73,17 @@ const CircularSlider = () => {
     if (isDragging) {
       const moveHandler = (event: MouseEvent | TouchEvent) => handleMouseMove(event);
       const endHandler = () => handleMouseUp();
-  
-      window.addEventListener("mousemove", moveHandler as EventListener);
-      window.addEventListener("mouseup", endHandler as EventListener);
-      window.addEventListener("touchmove", moveHandler as EventListener);
-      window.addEventListener("touchend", endHandler as EventListener);
-  
+
+      window.addEventListener("mousemove", moveHandler);
+      window.addEventListener("mouseup", endHandler);
+      window.addEventListener("touchmove", moveHandler);
+      window.addEventListener("touchend", endHandler);
+
       return () => {
-        window.removeEventListener("mousemove", moveHandler as EventListener);
-        window.removeEventListener("mouseup", endHandler as EventListener);
-        window.removeEventListener("touchmove", moveHandler as EventListener);
-        window.removeEventListener("touchend", endHandler as EventListener);
+        window.removeEventListener("mousemove", moveHandler);
+        window.removeEventListener("mouseup", endHandler);
+        window.removeEventListener("touchmove", moveHandler);
+        window.removeEventListener("touchend", endHandler);
       };
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
@@ -96,7 +94,7 @@ const CircularSlider = () => {
         className={styles.slider}
         ref={sliderRef}
         onMouseDown={handleMouseDown}
-        onTouchStart ={handleTouchStart}
+        onTouchStart={handleTouchStart}
       >
         <div className={styles.handle} ref={handleRef}></div>
       </div>
