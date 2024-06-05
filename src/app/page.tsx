@@ -25,7 +25,7 @@ export default function Home() {
       if (index < message.length) {
         return [
           ...prevLetters, 
-          { id: Date.now(), char: message[index], left: Math.random() * 100 }
+          { id: Date.now(), char: message[index], left: Math.floor( Math.random() * 89 ) + 5 }
         ];
       }
       return prevLetters;
