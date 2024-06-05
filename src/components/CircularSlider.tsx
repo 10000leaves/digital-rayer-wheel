@@ -58,6 +58,7 @@ const CircularSlider = () => {
   }, []);
 
   const handleMouseMove = useCallback((event: MouseEvent | TouchEvent) => {
+    event.preventDefault(); // マウスイベントとタッチイベントのデフォルト動作をキャンセル
     if (isDragging) {
       const newAngle = getAngleFromEvent(event);
       if (newAngle !== angle) {
@@ -72,7 +73,10 @@ const CircularSlider = () => {
 
   useEffect(() => {
     if (isDragging) {
-      const moveHandler = (event: MouseEvent | TouchEvent) => handleMouseMove(event);
+      const moveHandler = (event: MouseEvent | TouchEvent) => {
+        event.preventDefault(); // マウス移動とタッチ移動イベントのデフォルト動作をキャンセル
+        handleMouseMove(event);
+      };
       const endHandler = () => handleMouseUp();
 
       window.addEventListener("mousemove", moveHandler);
