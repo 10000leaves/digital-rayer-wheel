@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useRef } from 'react';
 import { useRecoilValue } from "recoil";
 import { angleState, messageState } from "@/atoms/prayerWheelAtom";
-
-// import Typing from "@/components/Typing";
 import CircularSlider from "@/components/CircularSlider";
-
 import styles from "./TextRain.module.css";
 
 export default function Home() {
   const angle = useRecoilValue(angleState);
   const message = useRecoilValue(messageState);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [letters, setLetters] = useState<{ id: number, char: string, left: number }[]>([]);
   const [index, setIndex] = useState(0);
@@ -23,9 +20,14 @@ export default function Home() {
 
     setLetters((prevLetters) => {
       if (index < message.length) {
+        // コンテナの幅を取得してleftの最大値を調整する
+        const containerWidth = containerRef.current ? containerRef.current.offsetWidth : window.innerWidth;
+        const letterWidth = 24; // 文字の幅を24pxと仮定
+        const maxLeft = 100 - (letterWidth / containerWidth) * 100;
+
         return [
           ...prevLetters, 
-          { id: Date.now(), char: message[index], left: Math.floor( Math.random() * 89 ) + 5 }
+          { id: Date.now(), char: message[index], left: Math.random() * maxLeft }
         ];
       }
       return prevLetters;
@@ -50,7 +52,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center p-8 space-y-8 bg-gray-900">
+    <main className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center p-8 space-y-8 bg-gray-900" ref={containerRef}>
 
       {/* アイコンの表示 */}
       <div className="select-none flex items-center mb-4">
