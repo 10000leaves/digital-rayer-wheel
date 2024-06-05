@@ -35,6 +35,20 @@ export default function Home() {
     seCount((prevCount) => (prevCount + 1));
   }, [angle]);
 
+  useEffect(() => {
+    const preventScroll = (event: TouchEvent) => {
+      event.preventDefault();
+    };
+
+    // スクロール防止用のイベントリスナーを設定
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+
+    return () => {
+      // コンポーネントがアンマウントされたときにイベントリスナーを削除
+      window.removeEventListener("touchmove", preventScroll);
+    };
+  }, []);
+
   return (
     <main className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center p-8 space-y-8 bg-gray-900">
 
